@@ -12,6 +12,18 @@ class Vertex(Element):
         super(Vertex, self).__init__(*args, **kwds)
 
     def edgeto(self, to, weight=None):
+        """
+        Defines a relationship between two vertices.
+
+        This is functionally equivalent to edgefrom, with the vertex instances
+        reversed.  So:
+
+        >>> e = u.edgeto(v)
+
+        is equivalent to
+
+        >>> e = v.edgefrom(u)
+        """
         return Edge(from_=self, to=to, weight=weight)
 
     def edgefrom(self, from_, weight=None):
