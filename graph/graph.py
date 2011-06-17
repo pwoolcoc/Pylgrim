@@ -10,6 +10,12 @@ class Vertex(object):
     def edgefrom(self, from_, weight=None):
         return Edge(from_=from_, to=self, weight=weight)
 
+    def __rshift__(self, to):
+        return self.edgeto(to)
+
+    def __lshift__(self, from_):
+        return self.edgefrom(from_)
+
 class Edge(object):
     def __init__(self, from_, to, weight=None, *args, **kwds):
         self.from_ = from_
