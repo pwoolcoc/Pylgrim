@@ -32,3 +32,21 @@ class GraphTests(TestCase):
 
         self.assertEqual(e.weight, 5)
 
+    def testVertexEdgeFrom(self):
+        """Connect 2 Vertices with an edge"""
+        u = Vertex()
+        v = Vertex()
+
+        e = u.edgefrom(v)
+
+        self.assertIsInstance(e, Edge)
+
+    def testVertexEdgeFromWithWeight(self):
+        """Connect 2 Vertices with an edge, and give the edge a weight"""
+        u = Vertex()
+        v = Vertex()
+
+        e = u.edgefrom(v, weight=5)
+
+        self.assertEqual(e.weight, 5)
+
