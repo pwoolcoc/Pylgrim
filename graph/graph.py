@@ -7,6 +7,9 @@ class Vertex(object):
     def edgeto(self, to, weight=None):
         return Edge(from_=self, to=to, weight=weight)
 
+    def edgefrom(self, from_, weight=None):
+        return Edge(from_=from_, to=self, weight=weight)
+
 class Edge(object):
     def __init__(self, from_, to, weight=None, *args, **kwds):
         self.from_ = from_
