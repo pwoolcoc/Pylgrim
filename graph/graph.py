@@ -52,14 +52,27 @@ class ElementList(list):
     """
     def __getattr__(self, name):
         def callme(*args, **kwds):
-            r = [   getattr(x, name)(*args, **kwds) # call the missing function
-                    for x in self                   # on each x in the list
-                    if hasattr(x, name)             # if x has that attribute
-                    and callable(getattr(x, name))] # and x.`name` is a function
+            _chain = True   # chain iterables together unless there is one
+                            # plain attribute
+            r = []
+            for x in self:
+                if hasattr(x, name):
+                    g = getattr(x, name)
+                    if callable(g):
+                        r.append(g(*args, **kwds))
+                    else:
+                        r.append(g)
+                        _chain = False
 
-            # r should now be a list of lists. chain.from_iterable will
-            # consolidate them
-            return ElementList( chain.from_iterable(r) )
+            # r should now be either a list of lists, a list of attributes, or
+            # a mix.
+            # if it is a list of lists, chain them together. otherwise, no
+            # chaining and we are not responsible for the mess lol
+            if _chain:
+                l = ElementList( chain.from_iterable(r) )
+            else:
+                l = ElementList( r )
+            return l
 
         return callme
 
