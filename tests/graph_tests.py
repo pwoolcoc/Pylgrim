@@ -80,3 +80,93 @@ class GraphTests(TestCase):
         self.assertEqual(e.from_, v)
         self.assertEqual(e.to, u)
 
+    # Abandoning this for now, til I get a better idea of how I'm going to do
+    # this
+    #def testVertexMultipleShorthandAssignments(self):
+        #"""
+        #Shorthand for joining unlimited nodes. Should return tuple of edges
+        #"""
+        #t = Vertex()
+        #u = Vertex()
+        #v = Vertex()
+
+        #e1, e2 = t >> u << v
+
+        #self.assertIsInstance(e1, Edge)
+        #self.assertEqual(e1.outV(), [t])
+        #self.assertEqual(e1.inV(), [u])
+        #self.assertIsInstance(e2, Edge)
+        #self.assertEqual(e2.outV(), [v])
+        #self.assertEqual(e2.inV(), [u])
+
+    def testVertexOut(self):
+        """
+        Vertex().out() should ret a list of the vertices that are 'out' from it
+        """
+        u = Vertex()
+        v = Vertex()
+
+        e = u >> v
+
+        self.assertEqual(u.out(), [v])
+
+    def testVertexOutE(self):
+        """
+        Vertex().outE() should ret a list of the edges that go 'out' from it
+        """
+        u = Vertex()
+        v = Vertex()
+
+        e = u >> v
+
+        self.assertEqual(u.outE(), [e])
+
+
+    def testVertexIn(self):
+        """
+        Vertex().in() should ret a list of the vertices that come 'in' to it
+        """
+        u = Vertex()
+        v = Vertex()
+        e = u >> v
+
+        self.assertEqual(v.in_(), [u])
+
+    def testVertexInE(self):
+        """
+        Vertex().inE() should ret a list of the edges that come 'in' to it
+        """
+        u = Vertex()
+        v = Vertex()
+
+        e = u >> v
+
+        self.assertEqual(v.inE(), [e])
+
+    def testVertexBoth(self):
+        """
+        Vertex().both() should ret a list of all adjacent vertices
+        """
+        t = Vertex()
+        u = Vertex()
+        v = Vertex()
+
+        e1 = t >> u
+        e2 = u >> v
+
+        self.assertEqual(u.both(), [v, t])
+
+
+    def testVertexBothE(self):
+        """
+        Vertex().bothE() should ret a list of all 'connected' edges
+        """
+        t = Vertex()
+        u = Vertex()
+        v = Vertex()
+
+        e1 = t >> u
+        e2 = u >> v
+
+        self.assertEqual(u.bothE(), [e2, e1])
+
