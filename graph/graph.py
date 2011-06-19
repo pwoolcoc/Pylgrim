@@ -37,6 +37,9 @@ class Vertex(Element):
         to._in_.append(self)
         to._inE.append(e)
 
+        e._inV.append(to)
+        e._outV.append(self)
+
         return e
 
     def edgefrom(self, from_, weight=None):
@@ -53,6 +56,9 @@ class Vertex(Element):
 
         from_._out.append(self)
         from_._outE.append(e)
+
+        e._inV.append(self)
+        e._outV.append(from_)
 
         return e
 
@@ -80,5 +86,13 @@ class Edge(Element):
         self.from_ = from_
         self.to = to
         self.weight = weight
+        self._inV = []
+        self._outV = []
         super(Edge, self).__init__(*args, **kwds)
+
+    def inV(self):
+        return self._inV
+    def outV(self):
+        return self._outV
+
 

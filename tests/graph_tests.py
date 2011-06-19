@@ -167,6 +167,39 @@ class GraphTests(TestCase):
 
         e1 = t >> u
         e2 = u >> v
-
         self.assertEqual(u.bothE(), [e2, e1])
+
+
+    def testEdgeInV(self):
+        """
+        Edge().inV() should ret a list of the vertices that the edge goes into
+        """
+        t = Vertex()
+        u = Vertex()
+        e = t >> u
+        self.assertEqual(e.inV(), [u])
+
+
+    def testEdgeOutV(self):
+        """
+        Edge().outV() should ret a list of the vertices the edge goes out of
+        """
+        t = Vertex()
+        u = Vertex()
+        e = t >> u
+        self.assertEqual(e.outV(), [t])
+
+    def testChainingSelectors(self):
+        """Chain {in,out}{_,E,V} calls together"""
+        t = Vertex()
+        u = Vertex()
+        e = t >> u
+
+        # >>> t.outE()
+        # [e]
+        # >>> e.inV()
+        # [u]
+        should_be_u = t.outE().inV()
+
+        self.assertEqual(should_be_u, [u])
 
