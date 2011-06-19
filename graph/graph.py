@@ -51,30 +51,27 @@ class ElementList(list):
     a few nodes.
     """
     def __getattr__(self, name):
-        def callme(*args, **kwds):
-            _chain = True   # chain iterables together unless there is one
-                            # plain attribute
-            r = []
-            for x in self:
-                if hasattr(x, name):
-                    g = getattr(x, name)
-                    if callable(g):
-                        r.append(g(*args, **kwds))
-                    else:
-                        r.append(g)
-                        _chain = False
+        _callable = all([
+                callable(getattr(x, name))
+                for x in self
+                if hasattr(x, name)
+                ])
 
-            # r should now be either a list of lists, a list of attributes, or
-            # a mix.
-            # if it is a list of lists, chain them together. otherwise, no
-            # chaining and we are not responsible for the mess lol
-            if _chain:
-                l = ElementList( chain.from_iterable(r) )
-            else:
-                l = ElementList( r )
-            return l
+        # if the attribute is callable, create and return the function.
+        # if not, collect the attributes into a list and return it
 
-        return callme
+        if _callable:
+            def callme(*args, **kwds):
+                r = [
+                        getattr(x, name)(*args, **kwds)
+                        for x in self
+                        if hasattr(x, name)]
+
+                return ElementList( chain.from_iterable(r) )
+            return callme
+        else:
+            r = [getattr(x, name) for x in self if hasattr(x, name)]
+            return ElementList(r)
 
 class Element(object):
     def __init__(self, *args, **kwds):
