@@ -7,7 +7,7 @@ class Element(object):
 
 class Vertex(Element):
     def __init__(self, obj=None, *args, **kwds):
-        self.id = uuid.uuid4().hex
+        self.uuid = uuid.uuid4().hex
         self.obj = obj
         super(Vertex, self).__init__(*args, **kwds)
 
@@ -27,6 +27,11 @@ class Vertex(Element):
         return Edge(from_=self, to=to, weight=weight)
 
     def edgefrom(self, from_, weight=None):
+        """
+        Defines a relationship between two vertices.
+
+        Defines the reverse relationship that `edgeto` does
+        """
         return Edge(from_=from_, to=self, weight=weight)
 
     def __rshift__(self, to):
