@@ -203,3 +203,17 @@ class GraphTests(TestCase):
 
         self.assertEqual(should_be_u, [u])
 
+
+    def testChainingSelectorsWithAttributeAccess(self):
+        """
+        Chain selectors together and request an attribute at the end of the chain
+        """
+        t = Vertex()
+        u = Vertex()
+        u.name = "I am U"
+
+        e = t >> u
+
+        should_be_i_am_u = t.outE().inV().name
+        self.assertEqual(should_be_i_am_u, ["I am U"])
+
