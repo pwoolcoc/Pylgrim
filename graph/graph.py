@@ -1,4 +1,5 @@
 import copy
+import itertools
 import uuid
 
 from itertools import chain
@@ -82,6 +83,14 @@ class Element(object):
                 raise AttributeError(
                         "You cannot overrite {0} on {1}".format(k, self))
 
+    def matches(self, _list, **kwds):
+        results = [
+                elem
+                for (elem, key) in itertools.product(_list, kwds)
+                if getattr(elem, key) == kwds.get(key)]
+
+        return ElementList(results)
+
 class Vertex(Element):
     def __init__(self, obj=None, *args, **kwds):
         self.uuid = uuid.uuid4().hex
@@ -145,17 +154,30 @@ class Vertex(Element):
     def __lshift__(self, from_):
         return self.edgefrom(from_)
 
-    def out(self):
+    def out(self, **kwds):
+        if kwds:
+            return self.matches(self._out, **kwds)
         return self._out
-    def outE(self):
+
+    def outE(self, **kwds):
+        if kwds:
+            return []
         return self._outE
-    def in_(self):
+    def in_(self, **kwds):
+        if kwds:
+            return []
         return self._in_
-    def inE(self):
+    def inE(self, **kwds):
+        if kwds:
+            return []
         return self._inE
-    def both(self):
+    def both(self, **kwds):
+        if kwds:
+            return []
         return self._out + self._in_
-    def bothE(self):
+    def bothE(self, **kwds):
+        if kwds:
+            return []
         return self._outE + self._inE
 
 class Edge(Element):
@@ -167,9 +189,9 @@ class Edge(Element):
         self._outV = ElementList()
         super(Edge, self).__init__(*args, **kwds)
 
-    def inV(self):
+    def inV(self, **kwds):
         return self._inV
-    def outV(self):
+    def outV(self, **kwds):
         return self._outV
 
 

@@ -23,6 +23,14 @@ class GraphTests(TestCase):
 
         self.assertEqual(t.name, "my name is t")
 
+    def testVertexCantOverwriteOurProperties(self):
+        """
+        We want to make sure the user can't set a property on an Edge or Vertex
+        that would overwrite something we need"""
+        with self.assertRaises(AttributeError):
+            Vertex(uuid="if this gets set, baaad!")
+
+
     def testVertexEdgeTo(self):
         """Connect 2 Vertices with an edge"""
         u = Vertex()
