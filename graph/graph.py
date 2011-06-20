@@ -75,7 +75,12 @@ class ElementList(list):
 
 class Element(object):
     def __init__(self, *args, **kwds):
-        self.__initial_properties__ = copy.deepcopy(self.__dict__)
+        for k, v in kwds.items():
+            if not hasattr(self, k):
+                setattr(self, k, v)
+            else:
+                raise AttributeError(
+                        "You cannot overrite {0} on {1}".format(k, self))
 
 class Vertex(Element):
     def __init__(self, obj=None, *args, **kwds):

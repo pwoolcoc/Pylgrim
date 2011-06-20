@@ -14,6 +14,15 @@ class GraphTests(TestCase):
         v = Vertex()
         self.assertTrue(ishex(v.uuid))
 
+    def testVertexInitWithProperties(self):
+        """
+        Set initial properties for the vertex. These are application-specific,
+        not tied to any of our implementation details
+        """
+        t = Vertex(name="my name is t")
+
+        self.assertEqual(t.name, "my name is t")
+
     def testVertexEdgeTo(self):
         """Connect 2 Vertices with an edge"""
         u = Vertex()
@@ -216,4 +225,36 @@ class GraphTests(TestCase):
 
         should_be_i_am_u = t.outE().inV().name
         self.assertEqual(should_be_i_am_u, ["I am U"])
+
+    def testChainingSelectorsWithAttributeMultiple(self):
+        """
+        Chain selectors together, and get a list of attributes
+        """
+        t = Vertex()
+        u = Vertex()
+        v = Vertex()
+        t.name = "_t"
+        u.name = "_u"
+        v.name = "_v"
+
+        e1 = t >> v
+        e2 = u >> v
+
+        result = t.out().in_().name
+        self.assertEqual(result, ["_t", "_u"])
+
+    def testSelectorWithFilter(self):
+        """
+        Selectors take optional keyword arguments as filters
+        """
+        t = Vertex(name="_t", value=1)
+        u = Vertex(name="_u", value=3)
+        v = Vertex(name="_v", value=5)
+
+        e1 = t >> u
+        e2 = t >> v
+
+        result = t.out(value=5)
+        self.assertEqual(result, [v])
+
 
