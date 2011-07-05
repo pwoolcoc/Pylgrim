@@ -110,11 +110,11 @@ class GraphTests(TestCase):
         #e1, e2 = t >> u << v
 
         #self.assertIsInstance(e1, Edge)
-        #self.assertEqual(e1.outV(), [t])
-        #self.assertEqual(e1.inV(), [u])
+        #self.assertEqual(e1.outV(), {t})
+        #self.assertEqual(e1.inV(), {u})
         #self.assertIsInstance(e2, Edge)
-        #self.assertEqual(e2.outV(), [v])
-        #self.assertEqual(e2.inV(), [u])
+        #self.assertEqual(e2.outV(), {v})
+        #self.assertEqual(e2.inV(), {u})
 
     def testVertexOut(self):
         """
@@ -125,7 +125,7 @@ class GraphTests(TestCase):
 
         e = u >> v
 
-        self.assertEqual(u.out(), [v])
+        self.assertEqual(u.out(), {v})
 
     def testVertexOutE(self):
         """
@@ -136,7 +136,7 @@ class GraphTests(TestCase):
 
         e = u >> v
 
-        self.assertEqual(u.outE(), [e])
+        self.assertEqual(u.outE(), {e})
 
 
     def testVertexIn(self):
@@ -147,7 +147,7 @@ class GraphTests(TestCase):
         v = Vertex()
         e = u >> v
 
-        self.assertEqual(v.in_(), [u])
+        self.assertEqual(v.in_(), {u})
 
     def testVertexInE(self):
         """
@@ -158,7 +158,7 @@ class GraphTests(TestCase):
 
         e = u >> v
 
-        self.assertEqual(v.inE(), [e])
+        self.assertEqual(v.inE(), {e})
 
     def testVertexBoth(self):
         """
@@ -171,7 +171,7 @@ class GraphTests(TestCase):
         e1 = t >> u
         e2 = u >> v
 
-        self.assertEqual(u.both(), [v, t])
+        self.assertEqual(u.both(), {v, t})
 
 
     def testVertexBothE(self):
@@ -184,7 +184,7 @@ class GraphTests(TestCase):
 
         e1 = t >> u
         e2 = u >> v
-        self.assertEqual(u.bothE(), [e2, e1])
+        self.assertEqual(u.bothE(), {e2, e1})
 
 
     def testEdgeInV(self):
@@ -194,7 +194,7 @@ class GraphTests(TestCase):
         t = Vertex()
         u = Vertex()
         e = t >> u
-        self.assertEqual(e.inV(), [u])
+        self.assertEqual(e.inV(), {u})
 
 
     def testEdgeOutV(self):
@@ -204,7 +204,7 @@ class GraphTests(TestCase):
         t = Vertex()
         u = Vertex()
         e = t >> u
-        self.assertEqual(e.outV(), [t])
+        self.assertEqual(e.outV(), {t})
 
     def testChainingSelectors(self):
         """Chain {in,out}{_,E,V} calls together"""
@@ -213,12 +213,12 @@ class GraphTests(TestCase):
         e = t >> u
 
         # >>> t.outE()
-        # [e]
+        # {e}
         # >>> e.inV()
-        # [u]
+        # {u}
         should_be_u = t.outE().inV()
 
-        self.assertEqual(should_be_u, [u])
+        self.assertEqual(should_be_u, {u})
 
 
     def testChainingSelectorsWithAttributeAccess(self):
@@ -232,7 +232,7 @@ class GraphTests(TestCase):
         e = t >> u
 
         should_be_i_am_u = t.outE().inV().name
-        self.assertEqual(should_be_i_am_u, ["I am U"])
+        self.assertEqual(should_be_i_am_u, {"I am U"})
 
     def testChainingSelectorsWithAttributeMultiple(self):
         """
@@ -249,7 +249,7 @@ class GraphTests(TestCase):
         e2 = u >> v
 
         result = t.out().in_().name
-        self.assertEqual(result, ["_t", "_u"])
+        self.assertEqual(result, {"_t", "_u"})
 
     def testSelectorWithFilter(self):
         """
@@ -263,6 +263,58 @@ class GraphTests(TestCase):
         e2 = t >> v
 
         result = t.out(value=5)
-        self.assertEqual(result, [v])
+        self.assertEqual(result, {v})
 
+
+    def testAttributeSelectorWithFilter(self):
+        """"""
+        t = Vertex(name="_t", value=1)
+        u = Vertex(name="_u", value=3)
+        v = Vertex(name="_v", value=5)
+
+        e1 = t >> u
+        e2 = t >> v
+
+        result = t.out(value=5).name
+        self.assertEqual(result, {"_v"})
+
+
+    def testMultipleFilters(self):
+        """Ensure multiple filters get applied correctly"""
+        t = Vertex()
+        u = Vertex(name="_u", class_="blah", value=3)
+        v = Vertex(name="_v", class_="blah", value=4)
+        w = Vertex(name="_w", class_="blah", value=5)
+
+        e1 = t >> u
+        e2 = t >> v
+        e3 = t >> w
+
+        result = t.out(class_="blah", value=4)
+        self.assertEqual(result, {v})
+
+    def testSelectorWithFilterMultipleResults(self):
+        """
+        Ensure a query with multiple results gets returned correctly
+        """
+        t = Vertex(name="_t", value=1)
+        u = Vertex(name="_u", value=5)
+        v = Vertex(name="_v", value=5)
+
+        e1 = t >> u
+        e2 = t >> v
+
+        result = t.out(value=5)
+        self.assertEqual(result, {u, v})
+
+    def testAttributeSelectorWithFilterMultipleResults(self):
+        t = Vertex(name="_t", value=1)
+        u = Vertex(name="_u", value=5)
+        v = Vertex(name="_v", value=5)
+
+        e1 = t >> u
+        e2 = t >> v
+
+        result = t.out(value=5).name
+        self.assertEqual(result, {"_u", "_v"})
 
