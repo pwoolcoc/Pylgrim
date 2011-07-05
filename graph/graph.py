@@ -85,7 +85,7 @@ class Element(object):
 
     def matches(self, _list, **kwds):
         sets = [set((elem for elem in _list
-                        if getattr(elem, key) == kwds.get(key)))
+                        if hasattr(elem, key) and getattr(elem, key) == kwds.get(key)))
                 for key in kwds]
 
         results = set.intersection(*sets)
@@ -93,11 +93,11 @@ class Element(object):
         return ElementSet(results)
 
     def __repr__(self):
-        dont_print = ["_out", "_outE", "_in_", "_inE", "_inV", "_outV"]
         attrs = ", ".join(["{key}: {value}".format(key=key, value=value)
                            for key, value in self.__dict__.items()
-                           if key not in dont_print])
-        return "<Element: {attrs}".format(attrs=attrs)
+                           if type(getattr(self, key)) is not ElementSet])
+
+        return "<{type}: {attrs}>".format(type=type(self).__name__, attrs=attrs)
 
 class Vertex(Element):
     def __init__(self, obj=None, *args, **kwds):
@@ -169,8 +169,9 @@ class Vertex(Element):
 
     def outE(self, **kwds):
         if kwds:
-            return {}
+            return self.matches(self._outE, **kwds)
         return self._outE
+
     def in_(self, **kwds):
         if kwds:
             return {}

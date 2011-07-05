@@ -14,6 +14,7 @@ class GraphTests(TestCase):
         v = Vertex()
         self.assertTrue(ishex(v.uuid))
 
+
     def testVertexInitWithProperties(self):
         """
         Set initial properties for the vertex. These are application-specific,
@@ -22,6 +23,7 @@ class GraphTests(TestCase):
         t = Vertex(name="my name is t")
 
         self.assertEqual(t.name, "my name is t")
+
 
     def testVertexCantOverwriteOurProperties(self):
         """
@@ -50,6 +52,14 @@ class GraphTests(TestCase):
         e = u.edgeto(v, weight=5)
 
         self.assertEqual(e.weight, 5)
+
+    def testVertexEdgeToWithOtherProperties(self):
+        """Make sure you can set other properties on the edge"""
+        t = Vertex()
+        u = Vertex()
+
+        e = t.edgeto(u, weight=5, label="First Edge")
+        self.assertEqual(e.label, "First Edge")
 
     def testVertexEdgeFrom(self):
         """Connect 2 Vertices with an edge"""
@@ -267,7 +277,7 @@ class GraphTests(TestCase):
 
 
     def testAttributeSelectorWithFilter(self):
-        """"""
+        """Make sure you can still get the attribute after using a filter"""
         t = Vertex(name="_t", value=1)
         u = Vertex(name="_u", value=3)
         v = Vertex(name="_v", value=5)
@@ -308,6 +318,7 @@ class GraphTests(TestCase):
         self.assertEqual(result, {u, v})
 
     def testAttributeSelectorWithFilterMultipleResults(self):
+        """Make sure having multiple results doesn't mess it up"""
         t = Vertex(name="_t", value=1)
         u = Vertex(name="_u", value=5)
         v = Vertex(name="_v", value=5)
@@ -317,4 +328,43 @@ class GraphTests(TestCase):
 
         result = t.out(value=5).name
         self.assertEqual(result, {"_u", "_v"})
+
+    def testMultipleFiltersMultipleResults(self):
+        """Ensure multiple filters get applied correctly"""
+        t = Vertex()
+        u = Vertex(name="_u", class_="blah", value=3)
+        v = Vertex(name="_v", class_="blah", value=4)
+        w = Vertex(name="_w", class_="blah", value=4)
+
+        e1 = t >> u
+        e2 = t >> v
+        e3 = t >> w
+
+        result = t.out(class_="blah", value=4)
+        self.assertEqual(result, {v, w})
+
+    def testMultipleFiltersMultipleResultsSomeMissingAttribute(self):
+        """Ensure multiple filters get applied correctly"""
+        t = Vertex()
+        u = Vertex(name="_u", value=3)
+        v = Vertex(name="_v", class_="blah", value=4)
+        w = Vertex(name="_w", class_="blah", value=4)
+
+        e1 = t >> u
+        e2 = t >> v
+        e3 = t >> w
+
+        result = t.out(class_="blah", value=4)
+        self.assertEqual(result, {v, w})
+    def testFiltersOutE(self):
+        """Make sure filters work with Edges, on the outE property"""
+        t = Vertex(name="Frank")
+        u = Vertex(name="Bob")
+        v = Vertex(name="Sally")
+
+        e1 = t.edgeto(u, weight=4, label="First Edge")
+        e2 = t.edgeto(v, weight=5, label="Second Edge")
+
+        results = t.outE(weight=5).label
+        self.assertEqual(results, {'Second Edge'})
 
