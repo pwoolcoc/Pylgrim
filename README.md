@@ -1,4 +1,4 @@
-# PyGremlin
+# Pilgrim
 
 This is a project to create a graph library similar to (but not nearly as
 powerful as) the [Gremlin](https://github.com/tinkerpop/gremlin/) project.

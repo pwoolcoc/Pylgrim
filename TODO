@@ -1,0 +1,43 @@
+Transform-based steps
+---------------------
+
+transform{closure}
+
+    emit the result of the closure
+
+_
+
+    emit the incoming object unchanged
+
+V
+
+    the vertex iterator of the graph
+
+E
+
+    the edge iterator of the graph
+
+id
+
+    the identifier of the element
+
+label
+
+    the label of the edge
+
+~~out~~
+
+    out adjacent vertices to the vertex
+
+~~outE~~
+
+    the outgoing 
+
+~~in~~
+
+~~inE~~
+
+~~both~~
+
+~~bothE~~
+
