@@ -1,5 +1,11 @@
-Transform-based steps
----------------------
+Need to make the Graph class the main way to access graph
+Need to make edge labels a first-class property
+
+
+# Steps
+
+## Transform-based steps
+
 
 transform{closure}
 
@@ -31,13 +37,103 @@ label
 
 ~~outE~~
 
-    the outgoing 
+    the outgoing edges of the vertex
 
 ~~in~~
 
+    in adjacent vertices to the vertex
+
 ~~inE~~
+
+    the incoming edges of the vertex
 
 ~~both~~
 
+    both adjacent vertices of the vertex
+
 ~~bothE~~
+
+    both incoming and outgoing edges of the vertex
+
+~~outV~~
+
+    the outgoing tail vertex of the edge
+
+~~inV~~
+
+    teh incoming head vertex of the edge
+
+bothV
+
+    both incoming and outgoing vertices of the edge
+
+['key']
+
+key
+
+gather{closure?}
+
+scatter
+
+loop(integer){closure}
+
+loop(string){closure}
+
+paths(closures...?)
+
+cap
+
+ifelse{ifclosure}{thenclosure}{elseclosure}
+
+copySplit(pipes...)
+
+fairMerge(pipes...)
+
+exhaustMerge(pipes...)
+
+
+## Filter-based steps
+
+
+filter{closure}
+
+[i]
+
+[i..j]
+
+[key:value]
+
+[key:[T,value]]
+
+propFilter('key', T, value)
+
+back(integer)
+
+back(string)
+
+andFilter(pipes...)
+
+orFilter(pipes...)
+
+uniqueObject
+
+uniquePath
+
+except(collection)
+
+retain(collection)
+
+
+## SideEffect-based steps
+
+
+sideEffect{closure}
+
+groupCount(map?){closures...?}
+
+aggregate(collection?)
+
+table(table, strings...?, closures...?)
+
+as(string)
 

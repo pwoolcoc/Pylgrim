@@ -3,18 +3,13 @@
 This is a project to create a graph library similar to (but not nearly as
 powerful as) the [Gremlin](https://github.com/tinkerpop/gremlin/) project.
 
-To be semi-compatible with the Gremlin way of things, I am going to
-include a `Graph` class. For now, it will probably remain optional, and
-will probably be nothing more than a wrapper around a `Vertex` list and
-an `Edge` list. My thinking is that eventually I am going to want to be
-able to import and export GraphML graphs, and having a central `Graph`
-class to do that in will probably be the most convenient.
+When I first started the project, I had hoped to *not* include a central
+`Graph` class, and just work directly with the vertices and edges. I
+have conceded that this plan will limit my options down the line a bit,
+so I am adding a central `Graph` class, and the API show below will be
+changing.
 
-~~Right now, the API does not includes Gremlin's nifty ``optional'' parenthesis.
-I would like to say it was because Python doesn't support that, but really I just don't
-have the necessary Python chops to pull this off right now.~~
-
-So, for now, the API would look something like this:
+So, for now, the API looks something like this:
 
     >>> # instantiate some vertices
     >>> 
@@ -49,4 +44,8 @@ You can also add filters to queries:
     >>> # query the graph
     >>> t.out(class_="bold").tag
     {'section', 'p'}
+
+After I'm done with the main `Graph` class, the query/filter API will be
+very similar, but building and managing the graph itself will be done
+through the `Graph` class.
 

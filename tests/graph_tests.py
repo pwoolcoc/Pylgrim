@@ -3,12 +3,18 @@ import string
 from nose.tools import *
 from unittest import TestCase
 
-from graph.graph import Edge, Vertex
+from graph.element import Edge, Vertex
+from graph import Graph
 
 def ishex(s):
     return all(c in string.hexdigits for c in s)
 
 class GraphTests(TestCase):
+    def testCreateGraph(self):
+        g = Graph()
+        self.assertIsInstance(g, Graph)
+
+class ElementTests(TestCase):
     def testVertexUUID(self):
         """Every vertex should get created with a uuid4().hex"""
         v = Vertex()

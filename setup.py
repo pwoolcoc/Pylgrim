@@ -8,7 +8,7 @@ config = {
         'author': 'Paul Woolcock',
         'author_email': 'pwoolcoc@gmail.com',
         'version': '0.1',
-        'install_requires': [],
+        'install_requires': ['oset'==0.1.1],
         'packages': find_packages(),
         'name': 'Pilgrim',
         'test_suite': 'nose.collector',
