@@ -3,7 +3,7 @@ import string
 from nose.tools import *
 from unittest import TestCase
 
-from graph.element import Edge, Vertex
+from graph.element import Edge, ElementList, Vertex
 from graph import Graph
 
 def ishex(s):
@@ -112,25 +112,6 @@ class ElementTests(TestCase):
         self.assertIsInstance(e, Edge)
         self.assertEqual(e.from_, v)
         self.assertEqual(e.to, u)
-
-    # Abandoning this for now, til I get a better idea of how I'm going to do
-    # this
-    #def testVertexMultipleShorthandAssignments(self):
-        #"""
-        #Shorthand for joining unlimited nodes. Should return tuple of edges
-        #"""
-        #t = Vertex()
-        #u = Vertex()
-        #v = Vertex()
-
-        #e1, e2 = t >> u << v
-
-        #self.assertIsInstance(e1, Edge)
-        #self.assertEqual(e1.outV(), {t})
-        #self.assertEqual(e1.inV(), {u})
-        #self.assertIsInstance(e2, Edge)
-        #self.assertEqual(e2.outV(), {v})
-        #self.assertEqual(e2.inV(), {u})
 
     def testVertexOut(self):
         """
@@ -373,4 +354,27 @@ class ElementTests(TestCase):
 
         results = t.outE(weight=5).label
         self.assertEqual(results, {'Second Edge'})
+
+class ElementListTests(TestCase):
+    def testfilterswithdicts(self):
+        obj1 = {'name': 'Paul', 'age': 28, 'hometown': 'Flint'}
+        obj2 = {'name': 'Dana', 'age': 24, 'hometown': 'Clarkston'}
+        obj3 = {'name': 'Bob', 'age': 29, 'hometown': 'Flint'}
+        a = ElementList([obj1, obj2, obj3])
+        result1 = a.filter(hometown="Flint")
+        result2 = a.filter(hometown="Flint", age=lambda x: x > 28)
+        self.assertEqual(result1, [obj1, obj3])
+        self.assertEqual(result2, [obj3])
+    def testfilterswithobjects(self):
+        class TestKlass(object):
+            pass
+        obj1 = TestKlass(); obj2 = TestKlass(); obj3 = TestKlass()
+        obj1.name = "Paul"; obj1.age = 28; obj1.hometown = "Flint"
+        obj2.name = "Dana"; obj2.age = 24; obj2.hometown = "Clarkston"
+        obj3.name = "Bob"; obj3.age = 29; obj3.hometown = "Flint"
+        a = ElementList([obj1, obj2, obj3])
+        result1 = a.filter(hometown="Flint")
+        result2 = a.filter(hometown="Flint", age=lambda x: x > 28)
+        self.assertEqual(result1, [obj1, obj3])
+        self.assertEqual(result2, [obj3])
 

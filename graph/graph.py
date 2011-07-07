@@ -1,11 +1,11 @@
 
 import graphml
-from element import Vertex, Edge
+from element import Edge, ElementList, Vertex
 
 class Graph(object):
     def __init__(self):
-        self._V = []
-        self._E = []
+        self._V = ElementList()
+        self._E = ElementList()
 
     @property
     def V(self):

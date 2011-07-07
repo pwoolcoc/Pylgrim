@@ -13,19 +13,10 @@ class Element(object):
                 raise AttributeError(
                         "You cannot overrite {0} on {1}".format(k, self))
 
-    def matches(self, _list, **kwds):
-        sets = [set((elem for elem in _list
-                        if hasattr(elem, key) and getattr(elem, key) == kwds.get(key)))
-                for key in kwds]
-
-        results = set.intersection(*sets)
-
-        return ElementSet(results)
-
     def __repr__(self):
         attrs = ", ".join(["{key}: {value}".format(key=key, value=value)
                            for key, value in self.__dict__.items()
-                           if type(getattr(self, key)) is not ElementSet])
+                           if type(getattr(self, key)) is not ElementList])
 
         return "<{type}: {attrs}>".format(type=type(self).__name__, attrs=attrs)
 
@@ -38,10 +29,10 @@ class Vertex(Element):
         self.uuid = uuid.uuid4().hex
         self.obj = obj
         self.label = label
-        self._out = ElementSet()
-        self._outE = ElementSet()
-        self._in_ = ElementSet()
-        self._inE = ElementSet()
+        self._out = ElementList()
+        self._outE = ElementList()
+        self._in_ = ElementList()
+        self._inE = ElementList()
         super(Vertex, self).__init__(*args, **kwds)
 
     def edgeto(self, to, weight=None, label=None):
@@ -60,14 +51,14 @@ class Vertex(Element):
         e = Edge(from_=self, to=to, weight=weight, label=label)
 
         # Bookkeeping
-        self._out = ElementSet(self._out | frozenset([to]))
-        self._outE = ElementSet(self._outE | frozenset([e]))
+        self._out.append(to)
+        self._outE.append(e)
 
-        to._in_ = ElementSet(to._in_ | frozenset([self]))
-        to._inE = ElementSet(to._inE | frozenset([e]))
+        to._in_.append(self)
+        to._inE.append(e)
 
-        e._inV = ElementSet(e._inV | frozenset([to]))
-        e._outV = ElementSet(e._outV | frozenset([self]))
+        e._inV.append(to)
+        e._outV.append(self)
 
         return e
 
@@ -80,14 +71,14 @@ class Vertex(Element):
         e = Edge(from_=from_, to=self, weight=weight, label=label)
 
         # Bookkeeping
-        self._in_ = ElementSet(self._in_ | frozenset([from_]))
-        self._inE = ElementSet(self._inE | frozenset([e]))
+        self._in_.append(from_)
+        self._inE.append(e)
 
-        from_._out = ElementSet(from_._out | frozenset([self]))
-        from_._outE = ElementSet(from_._outE | frozenset([e]))
+        from_._out.append(self)
+        from_._outE.append(e)
 
-        e._inV = ElementSet(e._inV | frozenset([self]))
-        e._outV = ElementSet(e._outV | frozenset([from_]))
+        e._inV.append(self)
+        e._outV.append(from_)
 
         return e
 
@@ -99,12 +90,12 @@ class Vertex(Element):
 
     def out(self, **kwds):
         if kwds:
-            return self.matches(self._out, **kwds)
+            return self._out.filter(**kwds)
         return self._out
 
     def outE(self, **kwds):
         if kwds:
-            return self.matches(self._outE, **kwds)
+            return self._outE.filter(**kwds)
         return self._outE
 
     def in_(self, **kwds):
@@ -118,11 +109,12 @@ class Vertex(Element):
     def both(self, **kwds):
         if kwds:
             return {}
-        return self._out | self._in_
+        return self._out + self._in_
     def bothE(self, **kwds):
         if kwds:
             return {}
-        return self._outE | self._inE
+        return self._outE + self._inE
+
     #def __repr__(self):
         #if self.idx:
             #rep = self.idx
@@ -130,7 +122,7 @@ class Vertex(Element):
             #rep = self.label
         #else:
             #rep = "_"
-        #return "{0}".format(rep)
+        #return rep
 
 class Edge(Element):
     def __init__(self, from_, to, weight=None, label=None, *args, **kwds):
@@ -138,8 +130,8 @@ class Edge(Element):
         self.to = to
         self.weight = weight
         self.label = label
-        self._inV = ElementSet()
-        self._outV = ElementSet()
+        self._inV = ElementList()
+        self._outV = ElementList()
         super(Edge, self).__init__(*args, **kwds)
 
     def inV(self, **kwds):
@@ -157,10 +149,11 @@ class Edge(Element):
         #return "[{from_}-{rep}-{to}]".format(from_=self.from_,
                                              #rep=rep, to=self.to)
 
-class ElementSet(frozenset):
+class ElementList(list):
     """
-    ElementSet is just a thin wrapper around the builtin `frozenset` class.
-    It's only purpose is to forward function calls to it's members.  That way,
+    ElementList is just a thin wrapper around the builtin `list` class.
+    It's main purpose is to forward function calls to it's members, though it
+    does do some bulk operations on it's contents. That way,
     my `Vertex` and `Edge` classes can receive the traversal selectors when
     they are chained together.
 
@@ -177,7 +170,7 @@ class ElementSet(frozenset):
     If we call this:
 
         >>> n.outE()
-        ElementSet(e1)
+        ElementList(e1)
 
     So chaining calls together like this:
 
@@ -186,18 +179,18 @@ class ElementSet(frozenset):
     We would actually be like doing this:
 
         >>> f = n.outE()
-        >>> f.inV()        # where f is an instance of ElementSet, not Edge...
+        >>> f.inV()        # where f is an instance of ElementList, not Edge...
 
-    Since this won't work, I make ElementSet call the missing function on all
-    it's members, consolidating the results into one single (new) ElementSet.
+    Since this won't work, I make ElementList call the missing function on all
+    it's members, consolidating the results into one single (new) ElementList.
     So,
 
-        >>> o.outE()   # ==> ElementSet(e2, e3)
+        >>> o.outE()   # ==> ElementList(e2, e3)
         >>> # and
-        >>> o.outE().inV()  # ==> ElementSet(p, q)
+        >>> o.outE().inV()  # ==> ElementList(p, q)
 
     Because in this case, both e2.inV() and e3.inV() get called, and the
-    results get put into one single ElementSet.
+    results get put into one single ElementList.
 
     (Note that calling Vertex().outE().inV() is functionally the same as
     calling Vertex().out(). The latter should be used for efficiency, but the
@@ -221,8 +214,10 @@ class ElementSet(frozenset):
                         for x in self
                         if hasattr(x, name)]
 
-                return ElementSet( chain.from_iterable(r) )
+                return ElementList( chain.from_iterable(r) )
             return callme
         else:
             r = [getattr(x, name) for x in self if hasattr(x, name)]
-            return ElementSet(r)
+            return ElementList(r)
+    def filter(self, **filters):
+        return self
