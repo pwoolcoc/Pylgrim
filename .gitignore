@@ -1,3 +1,5 @@
 *.pyc
 bin/
+__pycache__/
+*.pth
 
