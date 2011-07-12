@@ -122,7 +122,7 @@ class ElementTests(TestCase):
 
         e = u >> v
 
-        self.assertEqual(u.out(), {v})
+        self.assertEqual(u.out(), [v])
 
     def testVertexOutE(self):
         """
@@ -133,7 +133,7 @@ class ElementTests(TestCase):
 
         e = u >> v
 
-        self.assertEqual(u.outE(), {e})
+        self.assertEqual(u.outE(), [e])
 
 
     def testVertexIn(self):
@@ -144,7 +144,7 @@ class ElementTests(TestCase):
         v = Vertex()
         e = u >> v
 
-        self.assertEqual(v.in_(), {u})
+        self.assertEqual(v.in_(), [u])
 
     def testVertexInE(self):
         """
@@ -155,7 +155,7 @@ class ElementTests(TestCase):
 
         e = u >> v
 
-        self.assertEqual(v.inE(), {e})
+        self.assertEqual(v.inE(), [e])
 
     def testVertexBoth(self):
         """
@@ -168,7 +168,7 @@ class ElementTests(TestCase):
         e1 = t >> u
         e2 = u >> v
 
-        self.assertEqual(u.both(), {v, t})
+        self.assertEqual(u.both(), [v, t])
 
 
     def testVertexBothE(self):
@@ -181,7 +181,7 @@ class ElementTests(TestCase):
 
         e1 = t >> u
         e2 = u >> v
-        self.assertEqual(u.bothE(), {e2, e1})
+        self.assertEqual(u.bothE(), [e2, e1])
 
 
     def testEdgeInV(self):
@@ -191,7 +191,7 @@ class ElementTests(TestCase):
         t = Vertex()
         u = Vertex()
         e = t >> u
-        self.assertEqual(e.inV(), {u})
+        self.assertEqual(e.inV(), [u])
 
 
     def testEdgeOutV(self):
@@ -201,7 +201,7 @@ class ElementTests(TestCase):
         t = Vertex()
         u = Vertex()
         e = t >> u
-        self.assertEqual(e.outV(), {t})
+        self.assertEqual(e.outV(), [t])
 
     def testChainingSelectors(self):
         """Chain {in,out}{_,E,V} calls together"""
@@ -215,7 +215,7 @@ class ElementTests(TestCase):
         # {u}
         should_be_u = t.outE().inV()
 
-        self.assertEqual(should_be_u, {u})
+        self.assertEqual(should_be_u, [u])
 
 
     def testChainingSelectorsWithAttributeAccess(self):
@@ -229,7 +229,7 @@ class ElementTests(TestCase):
         e = t >> u
 
         should_be_i_am_u = t.outE().inV().name
-        self.assertEqual(should_be_i_am_u, {"I am U"})
+        self.assertEqual(should_be_i_am_u, ["I am U"])
 
     def testChainingSelectorsWithAttributeMultiple(self):
         """
@@ -246,7 +246,7 @@ class ElementTests(TestCase):
         e2 = u >> v
 
         result = t.out().in_().name
-        self.assertEqual(result, {"_t", "_u"})
+        self.assertEqual(result, ["_t", "_u"])
 
     def testSelectorWithFilter(self):
         """
@@ -260,7 +260,7 @@ class ElementTests(TestCase):
         e2 = t >> v
 
         result = t.out(value=5)
-        self.assertEqual(result, {v})
+        self.assertEqual(result, [v])
 
 
     def testAttributeSelectorWithFilter(self):
@@ -273,7 +273,7 @@ class ElementTests(TestCase):
         e2 = t >> v
 
         result = t.out(value=5).name
-        self.assertEqual(result, {"_v"})
+        self.assertEqual(result, ["_v"])
 
 
     def testMultipleFilters(self):
@@ -288,7 +288,7 @@ class ElementTests(TestCase):
         e3 = t >> w
 
         result = t.out(class_="blah", value=4)
-        self.assertEqual(result, {v})
+        self.assertEqual(result, [v])
 
     def testSelectorWithFilterMultipleResults(self):
         """
@@ -302,7 +302,7 @@ class ElementTests(TestCase):
         e2 = t >> v
 
         result = t.out(value=5)
-        self.assertEqual(result, {u, v})
+        self.assertEqual(result, [u, v])
 
     def testAttributeSelectorWithFilterMultipleResults(self):
         """Make sure having multiple results doesn't mess it up"""
@@ -314,7 +314,7 @@ class ElementTests(TestCase):
         e2 = t >> v
 
         result = t.out(value=5).name
-        self.assertEqual(result, {"_u", "_v"})
+        self.assertEqual(result, ["_u", "_v"])
 
     def testMultipleFiltersMultipleResults(self):
         """Ensure multiple filters get applied correctly"""
@@ -328,7 +328,7 @@ class ElementTests(TestCase):
         e3 = t >> w
 
         result = t.out(class_="blah", value=4)
-        self.assertEqual(result, {v, w})
+        self.assertEqual(result, [v, w])
 
     def testMultipleFiltersMultipleResultsSomeMissingAttribute(self):
         """Ensure multiple filters get applied correctly"""
@@ -342,7 +342,7 @@ class ElementTests(TestCase):
         e3 = t >> w
 
         result = t.out(class_="blah", value=4)
-        self.assertEqual(result, {v, w})
+        self.assertEqual(result, [v, w])
     def testFiltersOutE(self):
         """Make sure filters work with Edges, on the outE property"""
         t = Vertex(name="Frank")
@@ -353,9 +353,10 @@ class ElementTests(TestCase):
         e2 = t.edgeto(v, weight=5, label="Second Edge")
 
         results = t.outE(weight=5).label
-        self.assertEqual(results, {'Second Edge'})
+        self.assertEqual(results, ['Second Edge'])
 
 class ElementListTests(TestCase):
+
     def testfilterswithdicts(self):
         obj1 = {'name': 'Paul', 'age': 28, 'hometown': 'Flint'}
         obj2 = {'name': 'Dana', 'age': 24, 'hometown': 'Clarkston'}
@@ -365,6 +366,7 @@ class ElementListTests(TestCase):
         result2 = a.filter(hometown="Flint", age=lambda x: x > 28)
         self.assertEqual(result1, [obj1, obj3])
         self.assertEqual(result2, [obj3])
+
     def testfilterswithobjects(self):
         class TestKlass(object):
             pass
