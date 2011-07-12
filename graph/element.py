@@ -219,5 +219,13 @@ class ElementList(list):
         else:
             r = [getattr(x, name) for x in self if hasattr(x, name)]
             return ElementList(r)
+
     def filter(self, **filters):
-        return self
+        results = list(self)
+        for attr, filter_ in filters.items():
+            if callable(filter_):
+                results = [e for e in results if filter_(getattr(e, attr))]
+            else:
+                results = [e for e in results if getattr(e, attr) == filter_]
+        return ElementList(results)
+
