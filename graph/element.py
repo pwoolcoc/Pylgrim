@@ -100,20 +100,19 @@ class Vertex(Element):
 
     def in_(self, **kwds):
         if kwds:
-            return {}
+            return self._in_.filter(**kwds)
         return self._in_
+
     def inE(self, **kwds):
         if kwds:
-            return {}
+            return self._inE.filter(**kwds)
         return self._inE
+
     def both(self, **kwds):
-        if kwds:
-            return {}
-        return self._out + self._in_
+        return self.out(**kwds) + self.in_(**kwds)
+
     def bothE(self, **kwds):
-        if kwds:
-            return {}
-        return self._outE + self._inE
+        return self.outE(**kwds) + self.inE(**kwds)
 
     #def __repr__(self):
         #if self.idx:
@@ -220,12 +219,23 @@ class ElementList(list):
             r = [getattr(x, name) for x in self if hasattr(x, name)]
             return ElementList(r)
 
+    def _get(self, obj, attr):
+        try:
+            return obj[attr]
+        except (KeyError, TypeError):
+            return getattr(obj, attr) if hasattr(obj, attr) else None
+
+    def _matches(self, obj, attr, filter_):
+        attr = self._get(obj, attr)
+
+        if callable(filter_):
+            return filter_(attr)
+        else:
+            return attr == filter_
+
     def filter(self, **filters):
         results = list(self)
         for attr, filter_ in filters.items():
-            if callable(filter_):
-                results = [e for e in results if filter_(getattr(e, attr))]
-            else:
-                results = [e for e in results if getattr(e, attr) == filter_]
+            results = [e for e in results if self._matches(e, attr, filter_)]
         return ElementList(results)
 

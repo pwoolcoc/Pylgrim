@@ -355,6 +355,48 @@ class ElementTests(TestCase):
         results = t.outE(weight=5).label
         self.assertEqual(results, ['Second Edge'])
 
+    def testFiltersIn(self):
+        """Make sure Element.in_() can be filtered"""
+        t = Vertex(name="Frank")
+        u = Vertex(name="Bob")
+        v = Vertex(name="Sally")
+        e1 = t >> v
+        e2 = u >> v
+
+        results = v.in_(name="Bob")
+        self.assertEqual(results, [u])
+
+    def testFiltersInE(self):
+        """Make sure ELement.inE() can be filtered"""
+        t = Vertex()
+        u = Vertex()
+        v = Vertex()
+
+        e1 = v.edgefrom(t, weight=5)
+        e2 = v.edgefrom(u, weight=4)
+
+        results = v.inE(weight=5)
+        self.assertEqual(results, [e1])
+
+    def testFiltersBoth(self):
+        """Make sure Element.both() can be filtered"""
+        t = Vertex(class_="red")
+        u = Vertex(class_="blue")
+        v = Vertex(class_="yellow")
+        w = Vertex(class_="red")
+
+        e1 = t >> u
+        e2 = w << u
+        e3 = v >> u
+
+        results = u.both(class_="red")
+        try:
+            self.assertEqual(results, [t, w])
+        except AssertionError:
+            self.assertEqual(results, [w, t])
+
+
+
 class ElementListTests(TestCase):
 
     def testfilterswithdicts(self):
