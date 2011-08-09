@@ -21,11 +21,11 @@ So, for now, the API looks something like this:
     >>> 
     >>> # query the graph
     >>> t.outE().inV().name
-    {'Bob'}
+    ['Bob']
     >>> 
     >>> # this query could also be made like this:
     >>> t.out().name
-    {'Bob'}
+    ['Bob']
 
 You can also add filters to queries:
 
@@ -43,7 +43,7 @@ You can also add filters to queries:
     >>> 
     >>> # query the graph
     >>> t.out(class_="bold").tag
-    {'section', 'p'}
+    ['section', 'p']
 
 After I'm done with the main `Graph` class, the query/filter API will be
 very similar, but building and managing the graph itself will be done
