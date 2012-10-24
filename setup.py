@@ -4,11 +4,11 @@ except ImportError:
     from distutils.core import setup, find_packages
 
 config = {
-        'description': 'Python implementation of the Gremlin graph language',
+        'description': open("README.md").read(),
         'author': 'Paul Woolcock',
         'author_email': 'pwoolcoc@gmail.com',
-        'version': '0.1',
-        'install_requires': [],
+        'version': open("VERSION").read(),
+        'install_requires': open("requirements.txt").read().split(),
         'packages': find_packages(),
         'name': 'Pylgrim',
         'test_suite': 'nose.collector',
