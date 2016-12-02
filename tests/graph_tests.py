@@ -3,8 +3,8 @@ import string
 from nose.tools import *
 from unittest import TestCase
 
-from graph.element import Edge, ElementList, Vertex
-from graph import Graph
+from pylgrim.element import Edge, ElementList, Vertex
+from pylgrim import Graph
 
 def ishex(s):
     return all(c in string.hexdigits for c in s)

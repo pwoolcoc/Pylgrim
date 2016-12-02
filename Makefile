@@ -1,10 +1,12 @@
-BASE_PYTHON ?= $(shell which python)
-VENV := $(PWD)/.virtualenv
+PYVENV ?= $(shell which pyvenv)
+VENV := $(PWD)/.env
 
 PYTHON := $(VENV)/bin/python
 PIP := $(VENV)/bin/pip
 PEP8 := $(VENV)/bin/pep8
 NOSE := $(VENV)/bin/nosetests
+
+all: init
 
 dev-install: init
 	$(PYTHON) setup.py develop
@@ -12,7 +14,7 @@ dev-install: init
 init: $(VENV)
 
 $(VENV):
-	virtualenv --no-site-packages --python=$(BASE_PYTHON) $(VENV)
+	$(PYVENV) $(VENV)
 
 tests: dev-install
 	$(NOSE) ./tests/
